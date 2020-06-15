@@ -20,17 +20,13 @@ Web 2.0 很大程度上消除了这种看得见的交互。虽然仍有请求和
 
 如何实现呢？我们需要发送和请求的数据只包含我们需要的，而不是整个 HTML 页面。这种情况下 Ajax 允许在不更新整个 HTML 页面的情况下发送和接收数据。
 
-### 什么是AJAX？如何判断一个目标网站是否采用AJAX？
-
-balabala
-
 ## 如何爬取动态加载的资源？
 
 这种方式方便了用户，可是对我们爬取网页内容缺造成了不便。
 
 相对于传统的静态页面，我们在爬取页面内容时只需要简单的获取整个 HTML 文本然后对其中的内容进行匹配、提取即可。
 
-对于采用 AJAX 的网站来说，我们查看网页源代码会发现许多我们需要的资源是需要加载请求才能从服务器返回的。比如豆瓣的电影页面：
+对于采用动态记载内容的网站来说，我们查看网页源代码会发现许多我们需要的资源是需要加载请求才能从服务器返回的。比如百度首页
 
 
 
@@ -51,9 +47,81 @@ PhantomJS 是一个基于 Webkit 的“无界面”( headless )浏览器，它�
 
 下载地址： ` http://phantomjs.org/download.html`
 
+我们可以通过下面的方式来获得一个 **chromedriver** 驱动的浏览器([需要安装对应驱动](https://sites.google.com/a/chromium.org/chromedriver/home))
+
+```python
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--disable-gpu")
+driver = webdriver.Chrome(executable_path="./chromedriver.exe", chrome_options=chrome_options)
+```
+
+当然你也可以使用 **PhantomJS** 但是存在的问题是由于两种驱动请求页面的方式不同，后者在页面没有完全记载时就会尝试早期请求，这常常会导致 `InvalidElementStateException` 错误，当然，我们可以在请求页面第一个元素之前就调用 `time` 函数，进行 `sleep(2)` 等待。
+
+除此之外，**PhantomJS** 也已经不再更新，这也驱使我们使用新的驱动程序。
+
 ### Selenium & PhantomJS 简单使用
 
+```python
+# 导入 webdriver
+from selenium import webdriver
 
+# 调用键盘按键操作时需要引入的Keys包
+from selenium.webdriver.common.keys import Keys
+
+# 调用环境变量指定的PhantomJS浏览器创建浏览器对象
+driver = webdriver.PhantomJS()
+
+# 如果没有在环境变量指定PhantomJS位置
+# driver = webdriver.PhantomJS(executable_path="./phantomjs"))
+
+# get方法会一直等到页面被完全加载，然后才会继续程序，通常测试会在这里选择 time.sleep(2)
+driver.get("http://www.baidu.com/")
+
+# 获取页面名为 wrapper的id标签的文本内容
+data = driver.find_element_by_id("wrapper").text
+
+# 打印页面标题 "百度一下，你就知道"
+print driver.title
+
+# 生成当前页面快照并保存
+driver.save_screenshot("baidu.png")
+
+# id="kw"是百度搜索输入框，输入字符串"长城"
+driver.find_element_by_id("kw").send_keys(u"长城")
+
+# id="su"是百度搜索按钮，click() 是模拟点击
+driver.find_element_by_id("su").click()
+
+# ctrl+a 全选输入框内容
+driver.find_element_by_id("kw").send_keys(Keys.CONTROL,'a')
+
+# ctrl+x 剪切输入框内容
+driver.find_element_by_id("kw").send_keys(Keys.CONTROL,'x')
+
+# 获取href值
+driver.find_element_by_xpath("html/body/div/div[1]/div[2]/a[1]").get_attribute('href')
+
+# 模拟Enter回车键，替代点击操作
+driver.find_element_by_id("su").send_keys(Keys.RETURN)
+
+# 清除输入框内容
+driver.find_element_by_id("kw").clear()
+
+# 关闭当前页面，如果只有一个页面，会关闭浏览器
+# driver.close()
+
+# 关闭浏览器
+driver.quit()
+```
+
+[简单操作文档](https://dengxj.blog.csdn.net/article/details/104322155)
+
+[selenium官方文档](https://selenium-python.readthedocs.io/index.html)
+
+[PhantomJS手册](https://phantomjs.org/quick-start.html)
 
 
 ## 参考链接

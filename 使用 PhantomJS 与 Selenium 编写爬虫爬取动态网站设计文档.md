@@ -62,7 +62,7 @@ driver = webdriver.Chrome(executable_path="./chromedriver.exe", chrome_options=c
 
 除此之外，**PhantomJS** 也已经不再更新，这也驱使我们使用新的驱动程序。
 
-### Selenium & PhantomJS 简单使用
+### 简单使用
 
 ```python
 # 导入 webdriver
@@ -123,6 +123,58 @@ driver.quit()
 
 [PhantomJS手册](https://phantomjs.org/quick-start.html)
 
+使得截图截取到最大屏幕
+
+```python
+# 接下来是全屏的关键，用js获取页面的宽高，如果有其他需要用js的部分也可以用这个方法
+    width = driver.execute_script("return document.documentElement.scrollWidth")
+    height = driver.execute_script("return document.documentElement.scrollHeight")
+    print(width, height)
+    # 窗口最大化
+    driver.set_window_size(width, height)
+```
+
+### 切换页面
+
+当有许多 Tab 时我们需要判断我们当前处于哪个页面，使用 `window_handles` 来操作
+
+```python
+	# Store the ID of the original window
+	original_window = driver.current_window_handle
+
+    # Check we don't have other windows open already
+    assert len(driver.window_handles) == 1
+    
+    # Wait for the new window or tab
+    wait.until(EC.number_of_windows_to_be(2))
+
+    # Loop through until we find a new window handle
+    for window_handle in driver.window_handles:
+        if window_handle != original_window:
+            driver.switch_to.window(window_handle)
+            break
+            
+    wait.until(EC.title_is("title"))
+```
+
+
+
+### 复选框选择
+
+选择一个实际场景进行测试，[以研招网硕士专业目录为例](https://yz.chsi.com.cn/zsml/zyfx_search.jsp) 
+
+![image-20200616164407200](C:\Users\brian\AppData\Roaming\Typora\typora-user-images\image-20200616164407200.png)
+
+这有一个 `select` 标签下的复选框，用常规的方法解析 `Xpath` 路径可以获取到想要的元素，但是没办法进行选择，这里采用 `Selenium` 提供的 `Select` 库进行选择，[文档在这里](https://selenium-python-zh.readthedocs.io/en/latest/api.html)
+
+```python
+# 使用 Select 处理下拉框的选项
+# 先通过 Xpath 找到 select 标签，然后通过 value 找到对应值即可选择
+Select(driver.find_element_by_xpath("//select[@id='mldm']")).select_by_value('zyxw')
+Select(driver.find_element_by_xpath("//select[@id='yjxkdm']")).select_by_value("0854")
+```
+
+这样，我们就成功的选择到想要的元素，之后进行查询跳转即可。
 
 ## 参考链接
 

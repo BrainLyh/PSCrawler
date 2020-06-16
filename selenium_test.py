@@ -13,15 +13,18 @@ import time
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-gpu")
-driver = webdriver.Chrome(executable_path="E:/Program Files/chromedriver_win32/chromedriver.exe", chrome_options=chrome_options)
+driver = webdriver.Chrome(executable_path="E:/Program Files/chromedriver_win32/chromedriver.exe",
+                          chrome_options=chrome_options)
 driver.get("http://www.baidu.com/")
 data = driver.find_element_by_id("wrapper").text
 
 print(driver.title)
+print(driver.current_window_handle)
 driver.find_element_by_id("kw").send_keys(u"长城")
 # 百度一下的id:su
 driver.find_element_by_id("su").click()
 
+print(driver.current_window_handle)
 # 全选输入内容
 input = driver.find_element_by_id("kw").send_keys(Keys.CONTROL, 'a')
 # print("输入框内容：" + input)

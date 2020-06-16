@@ -52,7 +52,11 @@ PhantomJS 是一个基于 Webkit 的“无界面”( headless )浏览器，它�
 下载地址： ` http://phantomjs.org/download.html`
 
 ### Selenium & PhantomJS 简单使用
-
+实例1 Selenium & PhantomJS实现模拟登录
+看完Selenium & PhantomJS的官方文档和简介之后，应该已经知道了两者可以实现的功能，这个例子就用到了selenium的driver方法实现模拟键盘输入
+`driver.find_element_by_xpath().send_keys()`
+用`driver.find_element_by_xpath().click()`模拟鼠标的点击，从而实现模拟网站登录。其中需要注意的是在点击完登录按钮之后，要用`sleep()`来提供一定的缓冲时间，以便于后面的截屏操作。
+代码：`https://github.com/Dvsx/PSCrawler/blob/master/monidenglu.py`
 
 
 

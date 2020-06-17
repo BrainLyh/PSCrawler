@@ -58,6 +58,7 @@ def use_driver(url):
             driver.switch_to.window(window_handle)
             break
 
+    # 成功跳转到目标网页
     print(driver.current_url)
     # driver.save_screenshot("yzw.jpg")
 

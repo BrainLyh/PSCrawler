@@ -4,7 +4,7 @@
 @author: Brian
 @file: get_major_info.py
 @time: 2020/6/18 10:22
-@desc: 测试学校对应的研究方向页面的跳转与回退
+@desc: 测试学校对应的研究方向页面内的页面跳转
 '''
 
 from selenium import webdriver

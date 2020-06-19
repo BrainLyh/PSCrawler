@@ -35,6 +35,26 @@ def set_height_width(driver):
     return driver
 
 
+# 如果需要翻页就翻页
+def paging(driver):
+
+    css_selector_pages = "body.ch-sticky:nth-child(2) " \
+                         "div.main-wrapper:nth-child(2) " \
+                         "div.container.clearfix:nth-child(5) " \
+                         "div.zsml-row.clearfix div.zsml-page-box > ul.ch-page"
+
+    ul = driver.find_element_by_css_selector(css_selector_pages)
+    li = ul.find_elements_by_xpath("li")
+    # print(len(li))
+    # 第一页右下角的标签数量最大为10，小于10时没有 Go 输入跳转框
+    if(len(li) < 10):
+        pagenumber = int(li[-2].text)
+    # print(pagenumber)
+    else:
+        pagenumber = int(li[-3].text)
+    return pagenumber
+
+
 # 选择目标专业
 def select_major(driver):
     original_window = driver.current_window_handle
@@ -85,7 +105,7 @@ def get_school_name(driver):
                             "div.zsml-row.clearfix div.zsml-list-box " \
                             "table.ch-table " \
                             "tbody:nth-child(2) " \
-                            "tr:nth-child(1) > td:nth-child(2)"
+                            "tr:nth-child({}) > td:nth-child(2)"
     css_selector_pagenumbers = "body.ch-sticky:nth-child(2) " \
                                "div.main-wrapper:nth-child(2) " \
                                "div.container.clearfix:nth-child(4) " \
@@ -109,7 +129,7 @@ def get_school_name(driver):
                 try:
                     school_name = driver.find_element_by_css_selector(css_selector_schoolname.format(i)).get_attribute(
                         "textContent")
-                    city_name = driver.find_element_by_css_selector(css_selector_cityname).get_attribute("textContent")
+                    city_name = driver.find_element_by_css_selector(css_selector_cityname.format(i)).get_attribute("textContent")
 
                     # 跳转到每个学校对应的研究方向信息页面
                     driver.find_element_by_link_text(school_name).click()
@@ -117,9 +137,11 @@ def get_school_name(driver):
                         if window_handle != original_window:
                             driver.switch_to.window(window_handle)
                             break
-
                     driver = set_height_width(driver)
+
+                    # 得到该学校各个研究方向的列表
                     major_list = get_major_info(driver)
+                    major_list.insert(0, school_name)
 
                     # 关闭信息页面，转到学校列表页面
                     driver.close()
@@ -130,21 +152,24 @@ def get_school_name(driver):
                     school_name_list.append(school_and_city)
                     # print(school_name_list)
                     print(major_list)
-                except Exception as e :
+                except Exception as e:
                     print(e)
                     # print("全部学校爬取完毕！".center(100, "-"))
 
     print(school_name_list)
     # 结果如下
-    # ['(00)不区分研究方向  专业：3(不含推免)', '(01)软件工程  专业：390(不含推免)', '(02)网络安全  专业：390(不含推免)', '(03)智能科技  专业：390(不含推免)', '(04)集成电路  专业：390(不含推免)', '(05)电子通信  专业：390(不含推免)', '(06)金融科技  专业：390(不含推免)', '(07)计算机技术  专业：390(不含推免)']
-    # ['(01)不区分研究方向  专业：17(不含推免)', '(02)不区分研究方向  专业：44(不含推免)']
+    # ['(10001)北京大学', '(00)不区分研究方向  专业：3(不含推免)', '(01)软件工程  专业：390(不含推免)', '(02)网络安全  专业：390(不含推免)', '(03)智能科技  专业：390(不含推免)', '(04)集成电路  专业：390(不含推免)', '(05)电子通信  专业：390(不含推免)', '(06)金融科技  专业：390(不含推免)', '(07)计算机技术  专业：390(不含推免)']
+    # ['(10002)中国人民大学', '(01)不区分研究方向  专业：17(不含推免)', '(02)不区分研究方向  专业：44(不含推免)']
     # return
 
 
 # 获得院校在目标专业下的研究方向等信息
 def get_major_info(driver):
-    # 条目数
-    numbers = driver.find_elements_by_xpath("//tbody//tr")
+    # 当前页面有多少条数据
+    major_list = []
+    # 当前 Tab 里有多少个页面
+    pagenumber = paging(driver)
+    # print(pagenumber)
 
     # 定位研究方向
     css_selector_major = "body.ch-sticky:nth-child(2) " \
@@ -163,21 +188,62 @@ def get_major_info(driver):
                           "tbody:nth-child(2) " \
                           "tr:nth-child({}) " \
                           "td.ch-table-center:nth-child(7) > a.js-from-title:nth-child(2)"
-    # print(len(numbers))
-    major_list = []
-    for i in range(1, len(numbers) + 1):
-        try:
-            major = driver.find_element_by_css_selector(css_selector_major.format(i)).get_attribute("textContent")
-            number = driver.find_element_by_css_selector(css_selector_number.format(i)).get_attribute("data-title")
-            major_number = major + "  " + number
-            major_list.append(major_number)
-        except Exception as e:
-            print(e)
+    css_selector_jumpto = "body.ch-sticky:nth-child(2) " \
+                          "div.main-wrapper:nth-child(2) " \
+                          "div.container.clearfix:nth-child(5) " \
+                          "div.zsml-row.clearfix " \
+                          "div.zsml-page-box ul.ch-page "
+    if(pagenumber == 1):
+        # 不用下一页操作
+        numbers = driver.find_elements_by_xpath("//tbody//tr")
+        for i in range(1, len(numbers)+1):
+            try:
+                major = driver.find_element_by_css_selector(css_selector_major.format(i)).get_attribute("textContent")
+                number = driver.find_element_by_css_selector(css_selector_number.format(i)).get_attribute("data-title")
+                major_number = major + "  " + number
+                major_list.append(major_number)
+            except Exception as e:
+                print(e)
+    elif(pagenumber < 7 ):
+        # 找到下一页按钮
+        while(pagenumber):
+            numbers = driver.find_elements_by_xpath("//tbody//tr")
+            for i in range(1, len(numbers)+1):
+                try:
+                    major = driver.find_element_by_css_selector(css_selector_major.format(i)).get_attribute("textContent")
+                    number = driver.find_element_by_css_selector(css_selector_number.format(i)).get_attribute("data-title")
+                    major_number = major + "  " + number
+                    major_list.append(major_number)
+                except Exception as e:
+                    print(e)
+            ul = driver.find_element_by_css_selector(css_selector_jumpto)
+            li = ul.find_elements_by_xpath("li")
+            li[-1].click()
+            pagenumber -= 1
+    else:
+        # 下一页按钮位置不同,用 Go
+        flag = 2  # 下一次要Go的页码
 
+        while(pagenumber):
+            numbers = driver.find_elements_by_xpath("//tbody//tr")
+            # 定位页码
+            for i in range(1, len(numbers)+1):
+                try:
+                    major = driver.find_element_by_css_selector(css_selector_major.format(i)).get_attribute("textContent")
+                    number = driver.find_element_by_css_selector(css_selector_number.format(i)).get_attribute("data-title")
+                    major_number = major + "  " + number
+                    major_list.append(major_number)
+                except Exception as e:
+                    print(e)
+            driver.find_element_by_css_selector("#goPageNo").send_keys(str(flag))  # 输入页码跳转
+            driver.find_element_by_xpath("//input[@class='page-btn']").click()  # 点击 Go，仍然同是一个 window_handle
+            pagenumber -= 1
+            flag +=1
+
+    # print(len(major_list))
     # print(major_list)
 
     return major_list
-
 
 # 保存数据
 def save_data(data_list):

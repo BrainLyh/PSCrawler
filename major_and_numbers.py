@@ -12,6 +12,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
+import datetime
 
 
 # 配置 driver
@@ -143,6 +144,8 @@ def get_school_name(driver):
                     major_list = get_major_info(driver)
                     major_list.insert(0, school_name)
 
+                    print(major_list)
+
                     # 关闭信息页面，转到学校列表页面
                     driver.close()
                     driver.switch_to.window(original_window)
@@ -151,12 +154,13 @@ def get_school_name(driver):
                     school_and_city = school_name + "     " + city_name
                     school_name_list.append(school_and_city)
                     # print(school_name_list)
-                    print(major_list)
+
                 except Exception as e:
                     print(e)
                     # print("全部学校爬取完毕！".center(100, "-"))
 
     print(school_name_list)
+    save_data(school_name_list)
     # 结果如下
     # ['(10002)中国人民大学', '(01)不区分研究方向  专业：17(不含推免)', '(02)不区分研究方向  专业：44(不含推免)']
     # return
@@ -247,15 +251,19 @@ def get_major_info(driver):
 # 保存数据
 def save_data(data_list):
     with open("../major_info.txt", "w") as f:
-        f.write(data_list + "\r")
+        for line in data_list:
+            f.write(line + "\r")
 
 
 def main():
     url = "https://yz.chsi.com.cn/zsml/zyfx_search.jsp"
+    begin_time = datetime.datetime.now()
     driver = set_driver(url)
     driver = select_major(driver)
     get_school_name(driver)
-
+    end_time = datetime.datetime.now()
+    spend_time = end_time - begin_time
+    print("共花费：" + str(spend_time.seconds) + "s")
 
 
 if __name__ == '__main__':

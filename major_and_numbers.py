@@ -71,11 +71,13 @@ def select_major(driver):
     except Exception as e:
         print("wrong " + str(e))
 
+    # 找到查询按钮进行点击
     driver.find_element_by_xpath("//input[@name='button']").click()
 
     # 等待时间过长，超时
     # wait.until(EC.number_of_windows_to_be(2))
 
+    # 判断当前页面
     for window_handle in driver.window_handles:
         if window_handle != original_window:
             driver.switch_to.window(window_handle)
@@ -87,6 +89,7 @@ def select_major(driver):
 
 # 获得所有院校列表
 def get_school_name(driver):
+    # 记录院校列表页面的 handle
     original_window = driver.current_window_handle
     school_name_list = []
     major_list = []
@@ -115,6 +118,7 @@ def get_school_name(driver):
     # 翻页数
     number = driver.find_element_by_css_selector(css_selector_pagenumbers).get_attribute("textContent")
 
+    # 下一页的页码
     flag = 2
     while (flag <= int(number) + 1):
         for i in range(1, 32):
@@ -163,6 +167,8 @@ def get_school_name(driver):
     save_data(school_name_list)
     # 结果如下
     # ['(10002)中国人民大学', '(01)不区分研究方向  专业：17(不含推免)', '(02)不区分研究方向  专业：44(不含推免)']
+    driver.close()
+    driver.quit()
     # return
 
 

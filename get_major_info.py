@@ -14,8 +14,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 
 def set_driver():
-    url = "https://yz.chsi.com.cn/zsml/querySchAction.do?ssdm=11&dwmc=%E5%8C%97%E4%BA%AC%E9%82%AE%E7%94%B5%E5%A4%A7%E5%AD%A6" \
-          "&mldm=zyxw&mlmc=&yjxkdm=0854&xxfs=&zymc="
+    url = "https://yz.chsi.com.cn/zsml/queryAction.do"
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--disable-gpu")
@@ -88,7 +87,7 @@ def select_major(driver):
 def get_school_name(driver):
     original_window = driver.current_window_handle
     school_name_list = []
-    major_list = []
+    all_major_list = []
     # 定位学校名称、所在城市、页面数量
     css_selector_schoolname = "body.ch-sticky:nth-child(2) " \
                               "div.main-wrapper:nth-child(2) " \
@@ -125,7 +124,9 @@ def get_school_name(driver):
 
     # 得到各个研究方向的列表
     major_list = get_major(driver)
+    all_major_list.append(major_list)
     school_and_city = school_name + "     " + city_name
+
     school_name_list.append(school_and_city)
 
     driver.close()
@@ -135,9 +136,12 @@ def get_school_name(driver):
     # driver.save_screenshot("跳转结束.jpg")
     print(school_name_list)
     print(major_list)
+    print(all_major_list)
 
     driver.close()
     driver.quit()
+
+    return school_name_list,all_major_list
 
 
 def get_major(driver):
@@ -216,13 +220,28 @@ def get_major(driver):
             flag +=1
 
     print(len(major_list))
-    print(major_list)
-    # return major_list
+    # print(major_list)
+    return major_list
+
+
+def merge_data(school_name_list, all_major_list):
+    # dictionary = dict(zip(school_list, major_list))
+
+    dictionary = {}
+    for j in range(0,len(school_name_list)):
+        for i in range(0,len(all_major_list)):
+            print(school_name_list[j])
+            dictionary.setdefault(school_name_list[j],[]).append(all_major_list[i])
+    print(dictionary)
 
 
 def main():
-    driver = set_driver()
-    get_major(driver)
+    # driver = set_driver()
+    # driver = select_major(driver)
+    # school_name_list, all_major_list = get_school_name(driver)
+    school_name_list = ['(10001)北京大学     (11)北京市', '(10001)清华大学     (11)北京市']
+    all_major_list = [['(00)不区分研究方向  专业：3(不含推免)', '(01)软件工程  专业：390(不含推免)'], ['(02)网络安全  专业：390(不含推免)', '(03)智能科技  专业：390(不含推免)']]
+    merge_data(school_name_list, all_major_list)
 
 if __name__ == '__main__':
     main()

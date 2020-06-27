@@ -50,7 +50,7 @@ def paging(driver):
     return pagenumber
 
 
-# 复选框条件选择
+# 复选框条件选择，通过城市，门类、学科类别来区分
 def select_option(driver, count):
     # https://selenium-python-zh.readthedocs.io/en/latest/api.html
     # 使用 Select 处理下拉框的选项
@@ -67,7 +67,7 @@ def select_option(driver, count):
     driver.find_element_by_xpath("//input[@name='button']").click()
 
     # 点击完还是在一个 tab 里， handle 也一样
-
+    # 条件选择完之后开始统计数量
     counts = count_city(driver)
     # print("当前城市的学校数量：" + str(counts))
     return counts
@@ -108,7 +108,7 @@ def count_city(driver):
     return counts
 
 
-# 选择目标专业
+# 返回所有城市代码，然后遍历城市，得到高校数量
 def select_major(driver):
     # 记录所有的城市代码
     city_value = []
@@ -126,6 +126,7 @@ def select_major(driver):
         city_value.append(city.get_attribute("value"))
     print(city_name, city_value)
 
+    # 遍历城市代码，传入统计高校数量的函数
     for count in city_value:
         counts = select_option(driver, count)
         school_counts.append(counts)

@@ -10,6 +10,9 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import Select
+from pyecharts.charts import Line
+from pyecharts import options as opts
+
 
 # 配置 driver
 def set_driver(url):
@@ -196,12 +199,49 @@ def get_major_info(driver):
     return majors
 
 
+def stacked_area_chart(x_data, y1_data, y2_data):
+
+    (
+        Line()
+            .add_xaxis(xaxis_data=x_data)
+            .add_yaxis(
+            series_name="研究方向数量",
+            stack="总量",
+            y_axis=y1_data,
+            areastyle_opts=opts.AreaStyleOpts(opacity=0.5),
+            label_opts=opts.LabelOpts(is_show=False),
+        )
+            .add_yaxis(
+            series_name="拟招生人数",
+            stack="总量",
+            y_axis=y2_data,
+            areastyle_opts=opts.AreaStyleOpts(opacity=0.5),
+            label_opts=opts.LabelOpts(is_show=False),
+        )
+
+            .set_global_opts(
+            title_opts=opts.TitleOpts(title="高校研究方向折线图"),
+            tooltip_opts=opts.TooltipOpts(trigger="axis", axis_pointer_type="cross"),
+            yaxis_opts=opts.AxisOpts(
+                type_="value",
+                axistick_opts=opts.AxisTickOpts(is_show=True),
+                splitline_opts=opts.SplitLineOpts(is_show=True),
+            ),
+
+            xaxis_opts=opts.AxisOpts(type_="category", boundary_gap=False,name_rotate=60),
+        )
+            .render("stacked_area_chart.html")
+    )
+
+
 def main():
     url = "https://yz.chsi.com.cn/zsml/queryAction.do"
     driver = set_driver(url)
     count = '23'
-    select_option(driver, count)
+    x, y1 = select_option(driver, count)
 
+    y2 = [28, 10, 15, 5, 60, 100, 22, 13, 10, 60]
+    stacked_area_chart(x,y1,y2)
 
 if __name__ == '__main__':
     main()

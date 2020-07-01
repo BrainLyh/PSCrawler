@@ -4,34 +4,40 @@
 @author: Brian
 @file: CSCrawler.py
 @time: 2020/6/30 14:42
-@desc: 
+@desc: 程序的主入口函数
 '''
 
 from SchoolMapByPyEcharts import SchoolMap
 from ResearchDirectionsByPyEcharts import ReserachDirections
+from RDsBySchoolName import RDsBySchoolName
 import time
 
 class CSCrawler(object):
 
-    def __init__(self, url, mldm, yjxkdm):
+    def __init__(self, url, yjxkdm):
         self.url = url
-        self.mldm = mldm
         self.yjxkdm = yjxkdm
 
-    def SchoolMap(self):
-        school_map = SchoolMap(self.url, self.mldm, self.yjxkdm)
+    def SchoolMap(self, mldm):
+        school_map = SchoolMap(self.url, mldm, self.yjxkdm)
         driver = school_map.set_driver()
         city_name, school_counts = school_map.select_major(driver)
 
         school_map.visulize(city_name, school_counts)
 
-    def ResearchDirection(self, count):
-        researdirection = ReserachDirections(self.url, count, self.mldm, self.yjxkdm)
+    def ResearchDirection(self, count, mldm):
+        researdirection = ReserachDirections(self.url, count, mldm, self.yjxkdm)
         driver = researdirection.set_driver()
 
         x, y1, y2, flag = researdirection.select_option(driver)
 
         researdirection.stacked_area_chart(x, y1, y2, flag)
+
+    def RDsBySchoolName(self, schoolname):
+        rds = RDsBySchoolName(self.url, schoolname, self.yjxkdm)
+        driver = rds.set_driver()
+        x, y1, y2, flag = rds.select_school(driver)
+        rds.stacked_area_chart(x, y1, y2, flag)
 
 
 def main():
@@ -41,7 +47,8 @@ def main():
                         你想做什么?
                 [1]: 目标专业的全国分布地图
                 [2]: 目标省份内个高校对相关专业的招收情况
-                [3]: 退出程序
+                [3]: 目标院校对应专业的研究方向与拟招生人数情况
+                [4]: 退出程序
           -----------请在下方输入相关操作代码------------
           """
           "")
@@ -129,8 +136,8 @@ def main():
             mldm = str(input("请输入门类类别代码： ")).strip()
             yjxkdm = str(input("请输入学科类别代码： ")).strip()
             url = "https://yz.chsi.com.cn/zsml/queryAction.do"
-            crawler = CSCrawler(url, mldm, yjxkdm)
-            crawler.SchoolMap()
+            crawler = CSCrawler(url,yjxkdm)
+            crawler.SchoolMap(mldm)
             print("正在收集数据...")
 
         elif(code == str(2)):
@@ -222,14 +229,29 @@ def main():
             count = str(input("请输入城市代码： ")).strip()
             mldm = str(input("请输入门类类别代码： ")).strip()
             yjxkdm = str(input("请输入学科类别代码： ")).strip()
-            crawler = CSCrawler(url, mldm, yjxkdm)
-            crawler.ResearchDirection(count)
+            crawler = CSCrawler(url, yjxkdm)
+            crawler.ResearchDirection(count,mldm)
             print("正在收集数据...")
 
         elif(code == str(3)):
+            print("正在记载目标院校对应专业的研究方向与拟招生人数情况的程序...")
+            time.sleep(1)
+            print(""
+                  """
+        请分行输入完整的学校名称与学科类别代码，如：
+            学校名称：北京大学
+            专业类别代码：0202"""
+                  )
+            schoolname = str(input("请输入学校名称： ")).strip()
+            yjxkdm = str(input("请输入学科类别代码： ")).strip()
+            url = "https://yz.chsi.com.cn/zsml/queryAction.do"
+            crawler = CSCrawler(url, yjxkdm)
+            crawler.RDsBySchoolName(schoolname)
+
+            print("正在收集数据...")
+        elif(code == str(4)):
             print("正在退出...")
             time.sleep(1)
-            flag = False
             break
         else:
             print("对不起，暂不支持此操作！请重新输入...")

@@ -23,7 +23,6 @@ class ReserachDirections(object):
         self.mldm = mldm
         self.yjxkdm = yjxkdm
 
-
     # 配置 driver
     def set_driver(self):
         chrome_options = Options()
@@ -36,14 +35,12 @@ class ReserachDirections(object):
 
         return driver
 
-
     # 将设置屏幕大小独立出来，方便每次跳转完使用
     def set_height_width(self, driver):
         width = driver.execute_script("return document.documentElement.scrollWidth")
         height = driver.execute_script("return document.documentElement.scrollHeight")
         driver.set_window_size(width, height)
         return driver
-
 
     # 如果需要翻页就翻页
     def paging(self, driver):
@@ -58,7 +55,6 @@ class ReserachDirections(object):
             pagenumber = int(li[-3].text)
         print("当前页数：" + str(pagenumber))
         return pagenumber
-
 
     # 获得当前条件下的所有高校名称,返回名称列表
     def get_school_name(self, driver):
@@ -268,7 +264,6 @@ class ReserachDirections(object):
 
         print("正在准备绘制图表...")
         return school_name_list, major_numbers_list, number_list, flag
-
 
     def stacked_area_chart(self, x_data, y1_data, y2_data, flag):
 

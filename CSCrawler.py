@@ -18,6 +18,7 @@ class CSCrawler(object):
         self.url = url
         self.yjxkdm = yjxkdm
 
+    # 功能一
     def SchoolMap(self, mldm):
         school_map = SchoolMap(self.url, mldm, self.yjxkdm)
         driver = school_map.set_driver()
@@ -25,6 +26,7 @@ class CSCrawler(object):
 
         school_map.visulize(city_name, school_counts)
 
+    # 功能二
     def ResearchDirection(self, count, mldm):
         researdirection = ReserachDirections(self.url, count, mldm, self.yjxkdm)
         driver = researdirection.set_driver()
@@ -33,6 +35,7 @@ class CSCrawler(object):
 
         researdirection.stacked_area_chart(x, y1, y2, flag)
 
+    # 功能三
     def RDsBySchoolName(self, schoolname):
         rds = RDsBySchoolName(self.url, schoolname, self.yjxkdm)
         driver = rds.set_driver()
@@ -131,14 +134,19 @@ def main():
 
             """
                   "")
-            print("请根据上方对应关系输入门类类别代码、学科类别代码进行图表生成：".center(50, '-'))
-            print("例如:zyxw 0854 将会绘制开设 专业学位 电子信息 的高校在全国的分布信息".center(60, '-'))
+            print(""
+                  """
+        请分行输入门类类别代码、学科类别代码，如：
+            门类类别代码：zyxw
+            学科类别代码：0854
+        将会绘制开设 专业学位 电子信息 的高校在全国的分布信息"""
+                  )
             mldm = str(input("请输入门类类别代码： ")).strip()
             yjxkdm = str(input("请输入学科类别代码： ")).strip()
             url = "https://yz.chsi.com.cn/zsml/queryAction.do"
-            crawler = CSCrawler(url,yjxkdm)
-            crawler.SchoolMap(mldm)
             print("正在收集数据...")
+            crawler = CSCrawler(url, yjxkdm)
+            crawler.SchoolMap(mldm)
 
         elif(code == str(2)):
             print("正在加载目标省份内个高校对相关专业的招收情况的程序...")
@@ -222,16 +230,21 @@ def main():
 
             """
                   "")
-            print("请根据上方对应关系输入城市代码、门类类别代码、学科类别代码进行图表生成：".center(50, '-'))
-            print("例如:41 zyxw 0854 将会查询 河南省 专业学位 电子信息 的相关信息".center(60, '-'))
-
+            print(""
+                  """
+        请分行输入城市代码、门类类别代码、学科类别代码，如：
+            城市代码：41
+            门类类别代码：zyxw
+            学科类别代码：0854
+        将会查询 河南省 专业学位 电子信息 的相关信息"""
+                  )
             url = "https://yz.chsi.com.cn/zsml/queryAction.do"
             count = str(input("请输入城市代码： ")).strip()
             mldm = str(input("请输入门类类别代码： ")).strip()
             yjxkdm = str(input("请输入学科类别代码： ")).strip()
+            print("正在收集数据...")
             crawler = CSCrawler(url, yjxkdm)
             crawler.ResearchDirection(count,mldm)
-            print("正在收集数据...")
 
         elif(code == str(3)):
             print("正在记载目标院校对应专业的研究方向与拟招生人数情况的程序...")
@@ -245,10 +258,10 @@ def main():
             schoolname = str(input("请输入学校名称： ")).strip()
             yjxkdm = str(input("请输入学科类别代码： ")).strip()
             url = "https://yz.chsi.com.cn/zsml/queryAction.do"
+            print("正在收集数据...")
             crawler = CSCrawler(url, yjxkdm)
             crawler.RDsBySchoolName(schoolname)
 
-            print("正在收集数据...")
         elif(code == str(4)):
             print("正在退出...")
             time.sleep(1)

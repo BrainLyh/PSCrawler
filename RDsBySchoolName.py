@@ -194,8 +194,8 @@ class RDsBySchoolName(object):
                     xaxis_opts=opts.AxisOpts(axislabel_opts=opts.LabelOpts(rotate=-15)),
                     title_opts=opts.TitleOpts(title=schoolname + "专业信息折线图", subtitle="下属研究方向与拟招生人数"),
                 )
-                    .render("ReserachDirections.html")
+                    .render("ReserachDirectionsBySchoolName.html")
             )
-            print("绘制成功，请在同级目录下查看 ReserachDirections.html 文件！")
+            print("绘制成功，请在同级目录下查看 ReserachDirectionsBySchoolName.html 文件！")
         else:
             print("出现错误，停止绘制图表！")

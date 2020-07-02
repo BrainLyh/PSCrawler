@@ -128,7 +128,6 @@ class ReserachDirections(object):
         # print(name_list)
         return name_list, major_numbers_list, number_list, flag
 
-
     # 获得某个院校在目标专业下的研究方向的数量，返回数量列表
     def get_major_info(self, driver):
         # 当前 Tab 里有多少个页面

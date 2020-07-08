@@ -49,7 +49,7 @@ class RDsBySchoolName(object):
         li = ul.find_elements_by_xpath("li")
         # print("当前页面翻页元素长度：" + str(len(li)))
         # 第一页右下角的标签数量最大为10，小于10时没有 Go 输入跳转框
-        if(len(li) < 10):
+        if (len(li) < 10):
             pagenumber = int(li[-2].text)
         else:
             pagenumber = int(li[-3].text)
@@ -57,7 +57,7 @@ class RDsBySchoolName(object):
         return pagenumber
 
     # 通过学校名与专业选择学校
-    def select_school(self, driver,):
+    def select_school(self, driver, ):
         # 专业列表,研究方向数量列表，拟招生人数列表
         label_list = []
         major_number_list = []
@@ -106,7 +106,7 @@ class RDsBySchoolName(object):
 
         input_selector = "/html[1]/body[1]/div[2]/div[3]/div[1]/div[2]/div[2]/form[1]/ul[1]/li[{}]/input[1]"
         label_selector = "/html[1]/body[1]/div[2]/div[3]/div[1]/div[2]/div[2]/form[1]/ul[1]/li[{}]/label[1]"
-        for check_box in range(1, len(li)+1):
+        for check_box in range(1, len(li) + 1):
             try:
                 value = driver.find_element_by_xpath(input_selector.format(check_box)).get_attribute("value")
                 label = driver.find_element_by_xpath(label_selector.format(check_box)).get_attribute("textContent")
